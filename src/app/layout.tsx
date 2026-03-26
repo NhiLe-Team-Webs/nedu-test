@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({
@@ -26,6 +27,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi" className={`${inter.variable} antialiased font-sans`}>
+      <head>
+        {/* Google tag (gtag.js) */}
+        <Script
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-GCS7KVX9KT"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-GCS7KVX9KT');
+          `}
+        </Script>
+      </head>
       <body className="min-h-screen flex flex-col bg-[#FDFCFB] text-[#2D2D2D] selection:bg-[#8B5E3C] selection:text-white">
         {children}
       </body>

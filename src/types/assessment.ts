@@ -52,6 +52,7 @@ export interface ScoredItem {
   least_count: number;
   raw_score: number;
   normalized: number;
+  emoji?: string;
 }
 
 export interface AssessmentResult {

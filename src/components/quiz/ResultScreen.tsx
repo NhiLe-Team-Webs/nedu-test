@@ -7,6 +7,7 @@ interface ResultScreenProps {
   result: AssessmentResult;
   persona: Persona;
   onRestart: () => void;
+  onAdvancedTestStart?: () => void;
 }
 
 const COURSE_TYPE_BADGE: Record<string, { label: string; bg: string; text: string }> = {

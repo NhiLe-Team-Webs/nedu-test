@@ -1,107 +1,129 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import { WelcomeScreen } from '@/components/quiz/WelcomeScreen';
 import { StageSelectionScreen } from '@/components/quiz/StageSelectionScreen';
-import { QuestionScreen } from '@/components/quiz/QuestionScreen';
+import { MaxDiffSetScreen } from '@/components/quiz/MaxDiffSetScreen';
 import { AnalyzingScreen } from '@/components/quiz/AnalyzingScreen';
 import { ResultScreen } from '@/components/quiz/ResultScreen';
 import { ProgressBar } from '@/components/ui/ProgressBar';
+import { PERSONAS } from '@/data/maxdiff-data';
+import { calculateMaxDiffScores } from '@/lib/scoring';
+import type { SetAnswer, AssessmentResult, Persona } from '@/types/assessment';
 
-type StepType = 'welcome' | 'stageSelection' | 'q1' | 'q2' | 'q3' | 'analyzing' | 'result';
+type StepType = 'welcome' | 'personaSelect' | 'maxdiff' | 'analyzing' | 'result';
 
 export default function Home() {
   const [step, setStep] = useState<StepType>('welcome');
-  const [stageId, setStageId] = useState<string>('');
-  
-  const [answers, setAnswers] = useState({
-    pressure: 50,
-    awareness: 50,
-    connection: 50
-  });
+  const [personaId, setPersonaId] = useState<string>('');
+  const [currentSetIndex, setCurrentSetIndex] = useState(0);
+  const [setAnswers, setSetAnswers] = useState<SetAnswer[]>([]);
+  const [assessmentResult, setAssessmentResult] = useState<AssessmentResult | null>(null);
 
-  const handleAnalyze = () => {
-    setStep('analyzing');
-    setTimeout(() => {
-      setStep('result');
-    }, 3000);
+  const persona: Persona | undefined = personaId ? PERSONAS[personaId] : undefined;
+  const totalSets = persona?.sets.length ?? 0;
+
+  // Handle persona selection
+  const handlePersonaSelect = useCallback((id: string) => {
+    setPersonaId(id);
+    setCurrentSetIndex(0);
+    setSetAnswers([]);
+    setStep('maxdiff');
+  }, []);
+
+  // Handle MaxDiff set answer
+  const handleSetAnswer = useCallback((answer: SetAnswer) => {
+    const newAnswers = [...setAnswers, answer];
+    setSetAnswers(newAnswers);
+
+    if (currentSetIndex >= totalSets - 1) {
+      // All sets answered → calculate & show result
+      setStep('analyzing');
+      const result = calculateMaxDiffScores(persona!, newAnswers);
+      setAssessmentResult(result);
+      setTimeout(() => setStep('result'), 2500);
+    } else {
+      setCurrentSetIndex(prev => prev + 1);
+    }
+  }, [setAnswers, currentSetIndex, totalSets, persona]);
+
+
+  // Handle restart
+  const handleRestart = useCallback(() => {
+    setStep('welcome');
+    setPersonaId('');
+    setCurrentSetIndex(0);
+    setSetAnswers([]);
+    setAssessmentResult(null);
+  }, []);
+
+  // Handle back navigation from MaxDiff
+  const handleMaxDiffBack = useCallback(() => {
+    if (currentSetIndex > 0) {
+      // Go back to previous set, remove last answer
+      setCurrentSetIndex(prev => prev - 1);
+      setSetAnswers(prev => prev.slice(0, -1));
+    } else {
+      setStep('personaSelect');
+    }
+  }, [currentSetIndex]);
+
+  // Calculate progress
+  const getProgress = () => {
+    switch (step) {
+      case 'welcome': return 0;
+      case 'personaSelect': return 10;
+      case 'maxdiff': return 10 + ((currentSetIndex / totalSets) * 80);
+      case 'analyzing': return 95;
+      case 'result': return 100;
+      default: return 0;
+    }
   };
-
-  const progress = 
-    step === 'welcome' ? 0 :
-    step === 'stageSelection' ? 10 :
-    step === 'q1' ? 40 : 
-    step === 'q2' ? 70 : 
-    100;
 
   const renderCurrentStep = () => {
     switch (step) {
       case 'welcome':
-        return <WelcomeScreen onStart={() => setStep('stageSelection')} />;
-        
-      case 'stageSelection':
+        return <WelcomeScreen onStart={() => setStep('personaSelect')} />;
+
+      case 'personaSelect':
+        return <StageSelectionScreen onSelect={handlePersonaSelect} />;
+
+      case 'maxdiff':
+        if (!persona) return null;
         return (
-          <StageSelectionScreen onSelect={(selectedStage) => {
-            setStageId(selectedStage);
-            setStep('q1');
-          }} />
+          <MaxDiffSetScreen
+            persona={persona}
+            currentSetIndex={currentSetIndex}
+            totalSets={totalSets}
+            onAnswer={handleSetAnswer}
+            onBack={handleMaxDiffBack}
+          />
         );
 
-      case 'q1':
-        return (
-          <QuestionScreen 
-            step="q1"
-            value={answers.pressure}
-            onChange={(val) => setAnswers({ ...answers, pressure: val })}
-            onBack={() => setStep('stageSelection')}
-            onNext={() => setStep('q2')}
-          />
-        );
-        
-      case 'q2':
-        return (
-          <QuestionScreen 
-            step="q2"
-            value={answers.awareness}
-            onChange={(val) => setAnswers({ ...answers, awareness: val })}
-            onBack={() => setStep('q1')}
-            onNext={() => setStep('q3')}
-          />
-        );
-        
-      case 'q3':
-        return (
-          <QuestionScreen 
-            step="q3"
-            value={answers.connection}
-            onChange={(val) => setAnswers({ ...answers, connection: val })}
-            onBack={() => setStep('q2')}
-            onNext={handleAnalyze}
-          />
-        );
 
       case 'analyzing':
         return <AnalyzingScreen />;
 
       case 'result':
-        return <ResultScreen onRestart={() => {
-          setAnswers({ pressure: 50, awareness: 50, connection: 50 });
-          setStageId('');
-          setStep('welcome');
-        }} />;
+        if (!assessmentResult || !persona) return null;
+        return (
+          <ResultScreen
+            result={assessmentResult}
+            persona={persona}
+            onRestart={handleRestart}
+          />
+        );
     }
   };
 
   return (
     <main className="flex-1 flex flex-col items-center justify-center relative w-full min-h-[100dvh] bg-[#FDFCFB] md:py-12">
-      <ProgressBar progress={progress} />
+      <ProgressBar progress={getProgress()} />
 
-      {/* Main Container - full screen on mobile, styled card on desktop */}
       <div className="w-full max-w-xl flex flex-col justify-center bg-white min-h-[100dvh] md:min-h-[auto] md:rounded-3xl md:shadow-lg md:border border-[#F0EBE5] overflow-x-hidden p-6 md:p-12 relative z-10 transition-all duration-300">
         {renderCurrentStep()}
 
-        {/* Footer hidden on mobile to save space, visible on Desktop */}
         <footer className="hidden md:flex mt-12 text-[#A39A92] items-center justify-center gap-2 opacity-60">
           <CheckCircle2 size={14} />
           <span className="text-xs tracking-widest uppercase font-medium">N-Education Ecosystem | 2026</span>

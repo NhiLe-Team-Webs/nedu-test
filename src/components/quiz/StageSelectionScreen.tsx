@@ -1,19 +1,9 @@
 import React from 'react';
+import { PERSONA_ROUTES } from '@/data/maxdiff-data';
 
 interface StageSelectionProps {
-  onSelect: (stageId: string) => void;
+  onSelect: (personaId: string) => void;
 }
-
-const STAGES = [
-  { id: 'student', icon: '🎓', label: 'Còn đang học / Sinh viên' },
-  { id: 'junior', icon: '🌱', label: 'Mới đi làm 1–3 năm' },
-  { id: 'office', icon: '🧭', label: 'Nhân viên văn phòng / Corporate' },
-  { id: 'freelance', icon: '🦋', label: 'Freelancer / Tự kinh doanh' },
-  { id: 'manager', icon: '💼', label: 'Quản lý / Chủ doanh nghiệp nhỏ' },
-  { id: 'mother', icon: '🌸', label: 'Phụ nữ / Mẹ đang cân bằng gia đình & sự nghiệp' },
-  { id: 'public_servant', icon: '🌾', label: 'Giáo viên / Công chức / Viên chức' },
-  { id: 'executive', icon: '⛰️', label: 'Lãnh đạo cấp cao / Doanh nhân' },
-];
 
 export const StageSelectionScreen = ({ onSelect }: StageSelectionProps) => {
   return (
@@ -27,19 +17,24 @@ export const StageSelectionScreen = ({ onSelect }: StageSelectionProps) => {
         </h2>
       </div>
 
-      {/* Danh sách các lựa chọn có thể scroll nếu màn hình nhỏ */}
       <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2 pb-2">
-        {STAGES.map((stage) => (
+        {PERSONA_ROUTES.map((route) => (
           <button
-            key={stage.id}
-            onClick={() => onSelect(stage.id)}
-            className="w-full text-left p-4 rounded-2xl border border-[#F0EBE5] bg-white hover:border-[#8B5E3C] hover:bg-[#F9F8F6] hover:shadow-sm transition-all flex items-center gap-3 cursor-pointer group"
+            key={route.persona_id}
+            onClick={() => onSelect(route.persona_id)}
+            className={`w-full text-left p-4 rounded-2xl border bg-white hover:shadow-sm transition-all flex items-center gap-3 cursor-pointer group ${
+              route.persona_id === 'others'
+                ? 'border-dashed border-[#D4C9BC] hover:border-[#8B5E3C] hover:bg-[#FDF1E9]'
+                : 'border-[#F0EBE5] hover:border-[#8B5E3C] hover:bg-[#F9F8F6]'
+            }`}
           >
             <span className="text-xl md:text-2xl group-hover:scale-110 transition-transform">
-              {stage.icon}
+              {route.emoji}
             </span>
-            <span className="text-[#2D2D2D] font-medium text-sm md:text-base">
-              {stage.label}
+            <span className={`font-medium text-sm md:text-base ${
+              route.persona_id === 'others' ? 'text-[#8B7E74]' : 'text-[#2D2D2D]'
+            }`}>
+              {route.label}
             </span>
           </button>
         ))}

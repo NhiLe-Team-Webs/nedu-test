@@ -1,0 +1,63 @@
+// MaxDiff Assessment Types
+
+export interface Problem {
+  id: string;
+  label: string;
+  description: string;
+}
+
+export interface MaxDiffSet {
+  set_id: string;
+  set_label: string;
+  items: string[];
+}
+
+export interface CourseMapping {
+  triggered_by: string[];
+  problem_theme: string;
+  recommended_course: string;
+  course_type: string;
+  cta: string;
+  urgency_message: string;
+}
+
+export interface Persona {
+  id: string;
+  label: string;
+  emoji: string;
+  color: string;
+  maxdiff_instruction: string;
+  problem_pool: Problem[];
+  sets: MaxDiffSet[];
+  course_mapping: CourseMapping[];
+}
+
+export interface PersonaRoute {
+  label: string;
+  persona_id: string;
+  emoji: string;
+}
+
+export interface SetAnswer {
+  set_id: string;
+  most: string;
+  least: string;
+}
+
+export interface ScoredItem {
+  item_id: string;
+  label: string;
+  description: string;
+  most_count: number;
+  least_count: number;
+  raw_score: number;
+  normalized: number;
+}
+
+export interface AssessmentResult {
+  persona_id: string;
+  persona_label: string;
+  scores: ScoredItem[];
+  top_problems: ScoredItem[];
+  recommended_courses: CourseMapping[];
+}

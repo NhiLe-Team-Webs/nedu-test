@@ -21,7 +21,7 @@ export const ResultScreen = ({ onRestart }: ResultScreenProps) => {
       <div className="flex-1 flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-1000 pb-28 md:pb-0">
         <div className="space-y-2 text-center mt-6 md:mt-0">
           <div className="inline-block px-4 py-1.5 bg-[#FDF1E9] text-[#8B5E3C] rounded-full text-[10px] md:text-xs font-bold tracking-widest uppercase mb-1">
-            Kết quả chẩn đoán
+            Kết quả
           </div>
           <h2 className="text-3xl md:text-4xl font-light text-[#1A1A1A]">
             Người Dẫn Dắt <br className="md:hidden" />
@@ -36,22 +36,21 @@ export const ResultScreen = ({ onRestart }: ResultScreenProps) => {
         {/* Compact List cho đề xuất Offline & Online */}
         <div className="flex flex-col gap-3 pt-8 mt-auto md:mt-8">
           <div className="p-4 bg-[#F9F8F6] rounded-2xl border border-[#F0EBE5] flex items-center gap-4 hover:border-[#8B5E3C]/30 transition-colors cursor-pointer group">
-            <div className="w-10 h-10 bg-white rounded-full text-[#8B5E3C] shadow-sm flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-               <MapPin size={18} />
-            </div>
+            <img src="/LCM-premium.svg" className="w-16 h-16 object-contain shrink-0 group-hover:scale-110 transition-transform" alt="Premium" />
             <div className="flex-1">
-               <h3 className="font-semibold text-[#2D2D2D] text-sm tracking-tight">Retreat Chữa Lành 9 Ngày</h3>
-               <p className="text-xs text-[#8B7E74] leading-relaxed mt-0.5">Thiền động & thực dưỡng tại Đà Lạt</p>
+               <div className="flex items-center gap-1.5">
+                   <h3 className="font-semibold text-[#2D2D2D] text-sm md:text-base tracking-tight">Là chính mình Premium</h3>
+                   <img src="/LCM-premium-star.svg" className="w-6 h-6 object-contain" alt="Premium Star" />
+               </div>
+               <p className="text-xs text-[#8B7E74] leading-relaxed mt-0.5">Thiền động, thực dưỡng & phong thủy chuyên sâu</p>
             </div>
           </div>
 
           <div className="p-4 bg-[#F9F8F6] rounded-2xl border border-[#F0EBE5] flex items-center gap-4 hover:border-[#8B5E3C]/30 transition-colors cursor-pointer group">
-            <div className="w-10 h-10 bg-white rounded-full text-[#8B5E3C] shadow-sm flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-               <BookOpen size={18} />
-            </div>
+            <img src="/LCM.svg" className="w-16 h-16 object-contain shrink-0 group-hover:scale-110 transition-transform" alt="LCM" />
             <div className="flex-1">
-               <h3 className="font-semibold text-[#2D2D2D] text-sm tracking-tight">Khóa học "Là Chính Mình"</h3>
-               <p className="text-xs text-[#8B7E74] leading-relaxed mt-0.5">21 ngày tái cấu trúc EQ & Nội lực</p>
+               <h3 className="font-semibold text-[#2D2D2D] text-sm md:text-base tracking-tight">Là chính mình</h3>
+               <p className="text-xs text-[#8B7E74] leading-relaxed mt-0.5">3.5 ngày đánh thức sức mạnh nội tại</p>
             </div>
           </div>
         </div>

@@ -11,6 +11,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Nedu - Thấu hiểu chính mình",
   description: "Bắt đầu hành trình lắng nghe nội tâm cùng Nedu AI.",
+  icons: {
+    icon: "/logo-nedu.svg",
+  },
 };
 
 export const viewport: Viewport = {

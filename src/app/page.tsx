@@ -12,7 +12,9 @@ import { PERSONAS } from '@/data/maxdiff-data';
 import { calculateMaxDiffScores } from '@/lib/scoring';
 import type { SetAnswer, AssessmentResult, Persona } from '@/types/assessment';
 
-type StepType = 'welcome' | 'personaSelect' | 'maxdiff' | 'analyzing' | 'result';
+import { AdvancedTestScreen } from '@/components/quiz/AdvancedTestScreen';
+
+type StepType = 'welcome' | 'personaSelect' | 'maxdiff' | 'analyzing' | 'result' | 'flowerTest';
 
 export default function Home() {
   const [step, setStep] = useState<StepType>('welcome');
@@ -69,6 +71,16 @@ export default function Home() {
     }
   }, [currentSetIndex]);
 
+  // Handle advanced test start
+  const handleAdvancedTestStart = () => {
+    setStep('flowerTest');
+  };
+
+  // Handle back to result
+  const handleBackToResult = () => {
+    setStep('result');
+  };
+
   // Calculate progress
   const getProgress = () => {
     switch (step) {
@@ -77,6 +89,7 @@ export default function Home() {
       case 'maxdiff': return 10 + ((currentSetIndex / totalSets) * 80);
       case 'analyzing': return 95;
       case 'result': return 100;
+      case 'flowerTest': return 100;
       default: return 0;
     }
   };
@@ -101,7 +114,6 @@ export default function Home() {
           />
         );
 
-
       case 'analyzing':
         return <AnalyzingScreen />;
 
@@ -112,6 +124,16 @@ export default function Home() {
             result={assessmentResult}
             persona={persona}
             onRestart={handleRestart}
+            onAdvancedTestStart={handleAdvancedTestStart}
+          />
+        );
+        
+      case 'flowerTest':
+        if (!persona) return null;
+        return (
+          <AdvancedTestScreen 
+            onBackToResult={handleBackToResult}
+            persona={persona}
           />
         );
     }

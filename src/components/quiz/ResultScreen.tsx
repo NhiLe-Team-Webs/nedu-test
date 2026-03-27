@@ -17,18 +17,20 @@ const COURSE_TYPE_BADGE: Record<string, { label: string; bg: string; text: strin
   signature: { label: 'Signature', bg: 'bg-[#BA7517]/10', text: 'text-[#BA7517]' },
 };
 
-export const ResultScreen = ({ result, persona, onRestart }: ResultScreenProps) => {
+export const ResultScreen = ({ result, persona, onRestart, onAdvancedTestStart }: ResultScreenProps) => {
   const [showModal, setShowModal] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleFollowUpSubmit = (data: Record<string, string>) => {
     console.log("Submit follow up:", data);
-    setIsSuccess(true);
+    setShowModal(false);
+    if (onAdvancedTestStart) {
+      onAdvancedTestStart();
+    }
   };
 
   return (
     <>
-      <div className="flex-1 flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-1000 pb-28 md:pb-0">
+      <div className="flex-1 flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-1000 pb-48 md:pb-0">
 
         {/* Header */}
         <div className="space-y-2 text-center mt-6 md:mt-0">
@@ -50,7 +52,7 @@ export const ResultScreen = ({ result, persona, onRestart }: ResultScreenProps) 
         {/* Top problems */}
         <div className="mt-6 space-y-2">
           <h3 className="text-xs font-semibold text-[#8B7E74] uppercase tracking-wider ml-1">
-            Điều bạn đang cần nhất
+            Điều bạn quan tâm nhất
           </h3>
           <div className="space-y-3">
             {result.top_problems.map((problem, i) => (
@@ -60,14 +62,10 @@ export const ResultScreen = ({ result, persona, onRestart }: ResultScreenProps) 
               >
                 <div className="flex items-start gap-3">
                   <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-white font-bold text-sm"
-                    style={{ backgroundColor: persona.color }}
+                    className="w-full text-[#2D2D2D] text-sm flex gap-3"
                   >
-                    {i + 1}
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-[#2D2D2D] text-sm">{problem.label}</h4>
-                    <p className="text-xs text-[#8B7E74] mt-1 leading-relaxed">{problem.description}</p>
+                    <span className="text-xl shrink-0">{problem.emoji || '✨'}</span>
+                    <span className="font-medium">{problem.label}</span>
                   </div>
                 </div>
               </div>
@@ -75,40 +73,8 @@ export const ResultScreen = ({ result, persona, onRestart }: ResultScreenProps) 
           </div>
         </div>
 
-        {/* Course recommendations */}
-        <div className="mt-8 space-y-2">
-          <h3 className="text-xs font-semibold text-[#8B7E74] uppercase tracking-wider ml-1">
-            Chương trình được chọn riêng cho bạn
-          </h3>
-          <div className="space-y-3">
-            {result.recommended_courses.map((course, i) => {
-              const badge = COURSE_TYPE_BADGE[course.course_type] || COURSE_TYPE_BADGE.online;
-              return (
-                <div
-                  key={i}
-                  className="p-5 bg-white rounded-2xl border border-[#F0EBE5] hover:border-[#8B5E3C]/30 transition-colors cursor-pointer group shadow-sm"
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${badge.bg} ${badge.text}`}>
-                      {badge.label}
-                    </span>
-                  </div>
-                  <h4 className="font-semibold text-[#2D2D2D] text-base group-hover:text-[#8B5E3C] transition-colors">
-                    {course.recommended_course}
-                  </h4>
-                  <p className="text-xs text-[#8B7E74] mt-1 leading-relaxed italic">
-                    &ldquo;{course.urgency_message}&rdquo;
-                  </p>
-                  <button className="mt-3 text-sm font-semibold text-[#8B5E3C] flex items-center gap-1 group-hover:gap-2 transition-all">
-                    {course.cta}
-                    <ChevronRight size={14} />
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
+        {/* Course recommendations - Hiding as per screenshots we don't necessarily show them, wait, the design just has "Điều bạn quan tâm nhất" and the CTAs. Let me just keep the original list but style the options. No, let's keep it mostly same and change CTA */}
+        
         {/* Nút reset chìm */}
         <div className="text-center pt-6 mb-2 md:mb-0">
            <button
@@ -121,31 +87,34 @@ export const ResultScreen = ({ result, persona, onRestart }: ResultScreenProps) 
 
         {/* 🔥 STICKY CTA BLOCK */}
         <div className="fixed bottom-0 left-0 right-0 p-4 pb-6 bg-gradient-to-t from-white via-white/95 to-transparent z-40 md:relative md:bg-transparent md:p-0 md:pt-8 md:mt-4 pointer-events-none">
-          <div className="max-w-xl mx-auto pointer-events-auto">
-            <button
-              onClick={() => setShowModal(true)}
-              className="w-full bg-gradient-to-r from-[#8B5E3C] to-[#704B30] p-4 rounded-2xl shadow-xl shadow-[#8B5E3C]/25 flex items-center justify-between gap-4 cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
-            >
-              <div className="flex-1 text-left">
-                  <h3 className="text-white font-semibold text-base">Phân tích chuyên sâu</h3>
-                  <p className="text-white/80 text-xs mt-0.5 font-medium">Nhận kết quả chi tiết qua email</p>
-              </div>
-              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white shrink-0 backdrop-blur-md">
-                  <Mail size={18} className="drop-shadow-sm" />
-              </div>
-            </button>
+          <div className="max-w-xl mx-auto pointer-events-auto flex flex-col items-center gap-3">
+            <p className="text-sm text-[#8B7E74]">Bạn muốn tiếp tục như thế nào?</p>
+            <div className="w-full space-y-3">
+              <button
+                onClick={() => setShowModal(true)}
+                className="w-full bg-[#8B5E3C] text-white p-4 rounded-2xl flex items-center justify-center gap-2 cursor-pointer hover:bg-[#704B30] transition-colors font-medium border border-transparent shadow-sm"
+              >
+                <span>🌸</span> Làm test kỹ hơn — nhận kết quả về email
+              </button>
+              
+              <a 
+                href="https://nedu.nhi.sg/"
+                target="_blank"
+                rel="noreferrer"
+                className="w-full border border-[#8B5E3C] text-[#8B5E3C] bg-white p-4 rounded-2xl flex items-center justify-center gap-2 cursor-pointer hover:bg-[#FDF1E9] transition-colors font-medium shadow-sm block text-center"
+              >
+                Đăng ký khóa học ngay →
+              </a>
+            </div>
+            <p className="text-xs text-[#8B7E74]">Cả hai đều miễn phí</p>
           </div>
         </div>
       </div>
 
       {showModal && (
         <FollowUpModal
-          onClose={() => {
-            setShowModal(false);
-            if(isSuccess) onRestart();
-          }}
+          onClose={() => setShowModal(false)}
           onSubmit={handleFollowUpSubmit}
-          isSuccess={isSuccess}
         />
       )}
     </>

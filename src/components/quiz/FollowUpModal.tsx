@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
-import { Mail, User, Briefcase, Calendar, CheckCircle2, X } from 'lucide-react';
+import { Mail, Calendar, Briefcase, ChevronRight, X, User } from 'lucide-react';
 
 interface FollowUpModalProps {
   onClose: () => void;
   onSubmit: (data: any) => void;
-  isSuccess: boolean;
 }
 
-export const FollowUpModal = ({ onClose, onSubmit, isSuccess }: FollowUpModalProps) => {
+export const FollowUpModal = ({ onClose, onSubmit }: FollowUpModalProps) => {
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
-    age: '',
-    occupation: ''
+    dob: '',
+    occupation: '',
+    feeling: ''
   });
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1A1A1A]/40 backdrop-blur-sm animate-in fade-in duration-300">
@@ -27,116 +31,80 @@ export const FollowUpModal = ({ onClose, onSubmit, isSuccess }: FollowUpModalPro
           <X size={20} />
         </button>
 
-        {isSuccess ? (
-          // Màn hình Thành công
-          <div className="p-8 text-center space-y-6 pt-12">
-            <div className="flex justify-center animate-in zoom-in slide-in-from-bottom-4 duration-500">
-              <div className="w-20 h-20 bg-[#FDF1E9] rounded-full flex items-center justify-center text-[#8B5E3C]">
-                <CheckCircle2 size={40} />
+        <div className="p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+          <div className="text-center space-y-2 pr-6">
+            <h3 className="text-xl font-medium text-[#1A1A1A] text-left">Bạn có đồng ý cho Nedu lưu thông tin dưới đây để tư vấn chương trình phù hợp hơn với bạn không?</h3>
+          </div>
+
+          <form onSubmit={handleFormSubmit} className="space-y-5">
+            <div className="space-y-1.5">
+              <div className="relative">
+                <input 
+                  required
+                  type="email" 
+                  placeholder="an@gmail.com" 
+                  className="w-full px-4 py-3.5 bg-white border border-[#F0EBE5] rounded-xl text-sm focus:outline-none focus:border-[#8B5E3C] transition-all text-[#2D2D2D] shadow-sm"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                />
               </div>
             </div>
-            <div className="space-y-3">
-              <h3 className="text-2xl font-normal text-[#1A1A1A]">Đã gửi thành công!</h3>
-              <p className="text-[#6B6B6B] text-sm leading-relaxed px-2">
-                Bài test chuyên sâu 15 câu kèm bảng phân tích đa chiều vừa được chuyển vào hòm thư của bạn.
-              </p>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-[#8B7E74]">Ngày sinh (dùng tự động cho Bát tự & Thần số)</label>
+              <div className="relative">
+                <input 
+                  required
+                  type="date" 
+                  className="w-full px-4 py-3.5 bg-white border border-[#F0EBE5] rounded-xl text-sm focus:outline-none focus:border-[#8B5E3C] transition-all text-[#2D2D2D] shadow-sm appearance-none"
+                  value={formData.dob}
+                  onChange={(e) => setFormData({...formData, dob: e.target.value})}
+                />
+              </div>
             </div>
+            
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-[#8B7E74]">Công việc hiện tại</label>
+              <div className="relative">
+                <input 
+                  required
+                  type="text" 
+                  placeholder="Marketing Manager" 
+                  className="w-full px-4 py-3.5 bg-white border border-[#F0EBE5] rounded-xl text-sm focus:outline-none focus:border-[#8B5E3C] transition-all text-[#2D2D2D] shadow-sm"
+                  value={formData.occupation}
+                  onChange={(e) => setFormData({...formData, occupation: e.target.value})}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-[#8B7E74]">Điều bạn đang quan tâm</label>
+              <div className="relative">
+                <textarea 
+                  required
+                  rows={3}
+                  placeholder="Mình đang cảm thấy..." 
+                  className="w-full px-4 py-3.5 bg-white border border-[#F0EBE5] rounded-xl text-sm focus:outline-none focus:border-[#8B5E3C] transition-all text-[#2D2D2D] shadow-sm resize-none"
+                  value={formData.feeling}
+                  onChange={(e) => setFormData({...formData, feeling: e.target.value})}
+                />
+              </div>
+            </div>
+
             <button 
-              onClick={onClose}
-              className="w-full py-4 bg-[#2D2D2D] text-white rounded-2xl font-medium hover:bg-[#1A1A1A] transition-colors cursor-pointer mt-4"
+              type="submit"
+              className="w-full py-4 bg-[#8B5E3C] text-white rounded-xl font-medium hover:bg-[#704B30] transition-colors mt-4 shadow-md shadow-[#8B5E3C]/20 border border-[#704B30]/50 cursor-pointer"
             >
-              Trở về trang chính
+              Đồng ý & Tiếp tục
             </button>
-          </div>
-        ) : (
-          // Màn hình Form
-          <div className="p-8 space-y-6">
-            <div className="text-center space-y-2 pr-6">
-              <h3 className="text-xl font-medium text-[#1A1A1A] text-left">Nhận phân tích kết quả chuyên sâu về bài test?</h3>
-              <p className="text-[#6B6B6B] text-sm text-left">
-                Điền thông tin để Nedu gửi phân tích về email bạn và gợi mở chi tiết hơn về chặng đường tiếp theo của bạn.
-              </p>
-            </div>
-
-            <form 
-              onSubmit={(e) => {
-                e.preventDefault();
-                onSubmit(formData);
-              }}
-              className="space-y-5"
-            >
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#8B7E74] ml-1 uppercase tracking-wider">Họ và tên</label>
-                <div className="relative">
-                  <User size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#A39A92]" />
-                  <input 
-                    required
-                    type="text" 
-                    placeholder="Nguyễn Văn A" 
-                    className="w-full pl-11 pr-4 py-3.5 bg-[#F9F8F6] border border-[#F0EBE5] rounded-xl text-sm focus:outline-none focus:border-[#8B5E3C] focus:bg-white transition-all text-[#2D2D2D] shadow-sm"
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#8B7E74] ml-1 uppercase tracking-wider">Email</label>
-                <div className="relative">
-                  <Mail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#A39A92]" />
-                  <input 
-                    required
-                    type="email" 
-                    placeholder="hello@example.com" 
-                    className="w-full pl-11 pr-4 py-3.5 bg-[#F9F8F6] border border-[#F0EBE5] rounded-xl text-sm focus:outline-none focus:border-[#8B5E3C] focus:bg-white transition-all text-[#2D2D2D] shadow-sm"
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-[#8B7E74] ml-1 uppercase tracking-wider">Ngày tháng năm sinh</label>
-                  <div className="relative">
-                    <Calendar size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#A39A92]" />
-                    <input 
-                      required
-                      type="date" 
-                      placeholder="VD: 25/08/1995" 
-                      className="w-full pl-11 pr-3 py-3.5 bg-[#F9F8F6] border border-[#F0EBE5] rounded-xl text-sm focus:outline-none focus:border-[#8B5E3C] focus:bg-white transition-all text-[#2D2D2D] shadow-sm"
-                      value={formData.age}
-                      onChange={(e) => setFormData({...formData, age: e.target.value})}
-                    />
-                  </div>
-                </div>
-                
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-[#8B7E74] ml-1 uppercase tracking-wider">Nghề nghiệp</label>
-                  <div className="relative">
-                    <Briefcase size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#A39A92]" />
-                    <input 
-                      required
-                      type="text" 
-                      placeholder="VD: IT" 
-                      className="w-full pl-11 pr-3 py-3.5 bg-[#F9F8F6] border border-[#F0EBE5] rounded-xl text-sm focus:outline-none focus:border-[#8B5E3C] focus:bg-white transition-all text-[#2D2D2D] shadow-sm"
-                      value={formData.occupation}
-                      onChange={(e) => setFormData({...formData, occupation: e.target.value})}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <button 
-                type="submit"
-                className="w-full py-4 bg-[#8B5E3C] text-white rounded-xl font-medium hover:bg-[#704B30] transition-colors mt-4 shadow-md shadow-[#8B5E3C]/20 border border-[#704B30]/50 cursor-pointer flex justify-center items-center gap-2"
-              >
-                Gửi
-              </button>
-            </form>
-          </div>
-        )}
+            <p className="text-xs text-center text-[#8B7E74]">
+              Thông tin của bạn được bảo mật và chỉ dùng để tư vấn.
+            </p>
+          </form>
+        </div>
       </div>
     </div>
   );
 };
+
+

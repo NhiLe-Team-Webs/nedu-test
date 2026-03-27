@@ -248,9 +248,9 @@ export const MaxDiffSetScreen = ({
         display: "grid", gridTemplateColumns: "1fr auto 1fr",
         alignItems: "center", marginBottom: 16, gap: 8
       }}>
-        <LegendPill color={C.most} bg={C.mostBg} icon="▲" label="QUAN TRỌNG NHẤT" align="left" />
+        <LegendPill color={C.most} bg={C.mostBg} icon="▲" label="QUAN TRỌNG NHẤT VỚI TÔI" align="left" />
         <div style={{ width: 1, height: 28, background: C.border }} />
-        <LegendPill color={C.least} bg={C.leastBg} icon="▼" label="ÍT QUAN TRỌNG NHẤT" align="right" />
+        <LegendPill color={C.least} bg={C.leastBg} icon="▼" label="ÍT QUAN TRỌNG NHẤT LÚC NÀY" align="right" />
       </div>
 
       {/* Items */}
@@ -320,7 +320,7 @@ export const MaxDiffSetScreen = ({
             boxShadow: canProceed ? `0 4px 16px ${pColor}40` : "none"
           }}
         >
-          {currentSetIndex === totalSets - 1 ? "Xem kết quả →" : "Nhóm tiếp theo →"}
+          {currentSetIndex === totalSets - 1 ? "Xem kết quả của tôi →" : "Nhóm tiếp theo →"}
         </button>
       </div>
 

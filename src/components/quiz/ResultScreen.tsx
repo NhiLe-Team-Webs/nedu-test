@@ -42,6 +42,9 @@ export const ResultScreen = ({ result, persona, onRestart }: ResultScreenProps) 
           <p className="text-sm text-[#8B7E74] flex items-center justify-center gap-1.5">
             <span>{persona.emoji}</span> {persona.label}
           </p>
+          <p className="text-sm text-[#8B7E74] mt-3 max-w-sm mx-auto leading-relaxed px-4">
+            Dựa trên những gì bạn chia sẻ, đây là những gì chúng tôi nghĩ bạn đang cần nhất:
+          </p>
         </div>
 
         {/* Top problems */}

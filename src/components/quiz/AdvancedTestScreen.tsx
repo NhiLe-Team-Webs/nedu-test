@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Loader2 } from 'lucide-react';
+import type { UserBirthData } from '@/types/user-data';
+import { BaziResultView } from './BaziResultView';
 
 interface AdvancedTestScreenProps {
   onBackToResult: () => void;
   persona: any;
+  userBirthData?: UserBirthData;
 }
 
 type TestType = 'mbti' | 'enneagram' | 'motivation' | 'numerology' | 'battu' | null;
@@ -24,10 +27,47 @@ const PETALS = [
   { id: 'numerology', label: 'Thần số', angle: 288, color: '#CDA376', desc: '3 phút', icon: '⭐' }
 ];
 
-export const AdvancedTestScreen = ({ onBackToResult, persona }: AdvancedTestScreenProps) => {
+export const AdvancedTestScreen = ({ onBackToResult, persona, userBirthData }: AdvancedTestScreenProps) => {
   const [activeTest, setActiveTest] = useState<TestType>(null);
   // Initially no tests are completed
   const [completedTests, setCompletedTests] = useState<string[]>([]);
+  
+  // API fetched data cache
+  const [baziData, setBaziData] = useState<any>(null);
+  const [numerologyData, setNumerologyData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handlePetalClick = async (petalId: TestType) => {
+    if (!petalId || completedTests.includes(petalId)) return;
+    
+    if (petalId === 'battu' || petalId === 'numerology') {
+      if ((petalId === 'battu' && baziData) || (petalId === 'numerology' && numerologyData)) {
+        setActiveTest(petalId);
+        return;
+      }
+      
+      setActiveTest(petalId);
+      setIsLoading(true);
+      try {
+        const res = await fetch('/api/calculate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(userBirthData)
+        });
+        const data = await res.json();
+        if (data.success) {
+          setBaziData(data.bazi);
+          setNumerologyData(data.numerology);
+        }
+      } catch (err) {
+        console.error("Failed to load calculation:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setActiveTest(petalId);
+    }
+  };
 
   if (completedTests.length === 5) {
     return (
@@ -51,7 +91,28 @@ export const AdvancedTestScreen = ({ onBackToResult, persona }: AdvancedTestScre
 
   if (activeTest) {
     const testInfo = PETALS.find(p => p.id === activeTest);
-    const mockQ = MOCK_QUESTIONS[activeTest]?.[0];
+
+    if (activeTest === 'battu') {
+      if (isLoading) {
+        return (
+          <div className="flex-1 flex flex-col items-center justify-center animate-in fade-in w-full text-[#8B7E74]">
+            <Loader2 size={32} className="animate-spin text-[#8B5E3C] mb-4" />
+            <p>Đang tính toán Bát Tự...</p>
+          </div>
+        );
+      }
+      return (
+        <BaziResultView 
+          baziData={baziData} 
+          onBack={() => {
+            setCompletedTests(prev => Array.from(new Set([...prev, 'battu'])));
+            setActiveTest(null);
+          }} 
+        />
+      );
+    }
+
+    const mockQ = MOCK_QUESTIONS[activeTest]?.[0] || MOCK_QUESTIONS.mbti[0];
 
     return (
       <div className="flex-1 flex flex-col animate-in slide-in-from-right-8 fade-in pb-12 w-full">
@@ -155,7 +216,7 @@ export const AdvancedTestScreen = ({ onBackToResult, persona }: AdvancedTestScre
           return (
             <button
               key={`btn-${petal.id}`}
-              onClick={() => { if (!isCompleted) setActiveTest(petal.id as TestType); }}
+              onClick={() => handlePetalClick(petal.id as TestType)}
               className={`absolute top-1/2 left-1/2 w-28 h-28 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 z-20 ${isCompleted ? 'pointer-events-none opacity-50 scale-95' : 'hover:scale-110 active:scale-95'}`}
               style={{
                 transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`

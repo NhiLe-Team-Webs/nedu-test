@@ -21,22 +21,19 @@ export async function POST(request: Request) {
     
     // Fallback hour to noon if not provided
     const timeToUse = birthTime || '12:00';
-    // Combine to format: YYYY-MM-DDTHH:mm:00+TZ
     const isoString = `${dob}T${timeToUse}:00${tz}`;
 
-    // 1. Calculate Bazi
+    // 1. Calculate Bazi (local)
     const solarTime = getSolarTime(isoString, tz);
-    
     const baziData = buildBazi({
       solarTime,
       gender: gender as 0 | 1,
       eightCharProviderSect: 2
     });
 
-    // 2. Calculate Numerology
+    // 2. Calculate Numerology (local - ported from Python backend)
     const numerologyData = calculateFullNumerology(dob, fullName);
 
-    // Return combination
     return NextResponse.json({
       success: true,
       bazi: baziData,

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChevronLeft, Loader2 } from 'lucide-react';
 import type { UserBirthData } from '@/types/user-data';
 import { BaziResultView } from './BaziResultView';
+import { NumerologyResultView } from './NumerologyResultView';
 
 interface AdvancedTestScreenProps {
   onBackToResult: () => void;
@@ -106,6 +107,26 @@ export const AdvancedTestScreen = ({ onBackToResult, persona, userBirthData }: A
           baziData={baziData} 
           onBack={() => {
             setCompletedTests(prev => Array.from(new Set([...prev, 'battu'])));
+            setActiveTest(null);
+          }} 
+        />
+      );
+    }
+
+    if (activeTest === 'numerology') {
+      if (isLoading) {
+        return (
+          <div className="flex-1 flex flex-col items-center justify-center animate-in fade-in w-full text-[#8B7E74]">
+            <Loader2 size={32} className="animate-spin text-[#CDA376] mb-4" />
+            <p>Đang phân tích Thần Số Học...</p>
+          </div>
+        );
+      }
+      return (
+        <NumerologyResultView 
+          numerologyData={numerologyData} 
+          onBack={() => {
+            setCompletedTests(prev => Array.from(new Set([...prev, 'numerology'])));
             setActiveTest(null);
           }} 
         />

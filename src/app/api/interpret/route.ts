@@ -32,8 +32,18 @@ KHÔNG giải thích lại các thuật ngữ phức tạp, chỉ đưa ra kết
 
 Dữ liệu Bát Tự (JSON):
 ${JSON.stringify(payload)}`;
+    } else if (type === 'numerology') {
+      prompt = `Bạn là một chuyên gia Thần Số Học (Pythagorean Numerology), am hiểu tâm lý hiện đại.
+Hãy đọc dữ liệu Thần Số Học sau đây và đưa ra bản luận giải ngắn gọn (3-4 đoạn, tối đa 250 chữ), văn phong nhẹ nhàng, sâu sắc và dễ hiểu.
+Tập trung vào:
+1. Số Đường Đời (life_path_number): Đặc điểm tính cách cốt lõi, hướng đi lớn trong đời.
+2. Mối tương quan giữa Số Sứ Mệnh (destiny_number) và Số Linh Hồn (soul_urge_number): Khát khao bên trong vs sứ mệnh bên ngoài.
+3. Lời khuyên cá nhân hóa để sống hài hòa hơn dựa trên bộ số.
+KHÔNG giải thích thuật ngữ phức tạp. KHÔNG gạch đầu dòng. Viết văn xuôi mạch lạc. Trình bày bằng Markdown (in đậm, in nghiêng cho ý chính).
+
+Dữ liệu Thần Số Học (JSON):
+${JSON.stringify(payload)}`;
     } else {
-      // Dành cho Thần số học sau này
       return NextResponse.json({ error: 'Unsupported type' }, { status: 400 });
     }
 
